@@ -1,0 +1,9 @@
+#!/bin/bash
+# tmux の外から Claude Code を tmux 付きで起動する。猫ペイン・ツリーペインはプラグインの SessionStart フックが開く
+# 使い方: claude-neko [claude の引数...]
+S="neko-$$"
+tmux new-session -d -s "$S" -x "$(tput cols)" -y "$(tput lines)" "claude $(printf '%q ' "$@"); tmux kill-session -t $S"
+tmux set-option -t "$S" status off
+tmux set-option -t "$S" pane-border-style "fg=colour238"
+tmux set-option -t "$S" pane-active-border-style "fg=colour238"
+exec tmux attach -t "$S"

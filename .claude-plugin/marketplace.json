@@ -1,0 +1,10 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-neko",
+  "description": "tmux ペインで飼うコンテキスト残量猫と、Claude プロンプトへパスを挿入できるディレクトリツリー",
+  "owner": {"name": "devil-works"},
+  "plugins": [
+    {"name": "neko", "source": "./plugins/neko", "description": "コンテキスト残量で表情が変わる猫。Claude 起動時に下ペインへ自動で現れ、サブエージェントは子猫として並ぶ"},
+    {"name": "tree", "source": "./plugins/tree", "description": "左ペインのディレクトリツリー。Enter/右クリックでパスを Claude のプロンプトへ挿入、y で tmux バッファへコピー"}
+  ]
+}

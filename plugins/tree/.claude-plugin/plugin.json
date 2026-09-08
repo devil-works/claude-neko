@@ -1,0 +1,6 @@
+{
+  "name": "tree",
+  "author": {"name": "devil-works"},
+  "version": "0.1.1",
+  "description": "tmux 左ペインのディレクトリツリー。選んだパスを tmux バッファにコピー、または Claude のプロンプトへ直接挿入"
+}
