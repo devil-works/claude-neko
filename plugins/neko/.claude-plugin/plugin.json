@@ -1,6 +1,6 @@
 {
   "name": "neko",
   "author": {"name": "devil-works"},
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "tmux ペインで飼うコンテキスト残量猫。Claude 起動時に下ペインへ自動で現れる"
 }
