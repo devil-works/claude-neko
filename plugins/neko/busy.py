@@ -2,14 +2,16 @@
 # Claude Code の hook から呼ばれ、猫ペイン用に稼働状態と並列エージェント数を書き出す
 # 使い方: busy.py prompt|busy|idle|wait|end|agent_start|agent_stop  (stdin に hook の JSON)
 # 子猫 (agents.json) は agent_stop と end でしか消さない。idle/prompt で消すとバックグラウンド実行中の子猫が消えてしまう
-import fcntl, json, os, sys, time
+import fcntl, json, os, shutil, sys, time
 
 cmd = sys.argv[1] if len(sys.argv) > 1 else "idle"
 try:
     d = json.load(sys.stdin)
 except Exception:
     d = {}
-D = os.environ.get("NEKO_DIR") or os.path.expanduser("~/.claude/statusline")
+# セッションごとに分ける (複数ウィンドウで猫が混ざらないように)
+BASE = os.environ.get("NEKO_DIR") or os.path.expanduser("~/.claude/statusline")
+D = os.path.join(BASE, d.get("session_id") or "")
 os.makedirs(D, exist_ok=True)
 BUSY, AGENTS = D + "/busy.json", D + "/agents.json"
 
@@ -32,6 +34,11 @@ with open(D + "/.lock", "w") as lk:
         write(BUSY, {"state": state, "ts": time.time(), "session_id": d.get("session_id", "")})
         if cmd == "end":
             write(AGENTS, {"agents": {}})
+            # 自分のセッションと、1 日以上更新のない取り残しを片付ける
+            for name in os.listdir(BASE):
+                path = os.path.join(BASE, name)
+                if os.path.isdir(path) and (path == D or time.time() - os.path.getmtime(path) > 86400):
+                    shutil.rmtree(path, ignore_errors=True)
     elif cmd == "agent_start":
         a = load(AGENTS).get("agents", {})
         aid = str(d.get("agent_id") or d.get("agentId") or ("anon-%d" % int(time.time() * 1000)))

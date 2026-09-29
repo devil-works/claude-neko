@@ -19,7 +19,9 @@ size = cw.get("context_window_size") or 0
 
 # tmux ペインの猫 (neko.py) 用に状態を書き出す
 try:
+    # セッションごとに分ける (複数ウィンドウで猫が混ざらないように)
     D = os.environ.get("NEKO_DIR") or os.path.expanduser("~/.claude/statusline")
+    D = os.path.join(D, d.get("session_id") or "")
     os.makedirs(D, exist_ok=True)
     st = D + "/state.json"
     tmp = st + ".tmp"

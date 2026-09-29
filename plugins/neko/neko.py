@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # tmux ペインで動くコンテキスト残量猫
 # cat.py (statusLine) が書く state.json を読み、使用率に応じて表情・汗・震えが変わる
-import curses, json, os, time, random, unicodedata
+# 引数にセッション ID を渡すとそのセッションの状態だけを見る (pane-open.sh が渡す)
+import curses, json, os, sys, time, random, unicodedata
 
 D = os.environ.get("NEKO_DIR") or os.path.expanduser("~/.claude/statusline")
+D = os.path.join(D, sys.argv[1] if len(sys.argv) > 1 else "")
 STATE, BUSY, AGENTS = D + "/state.json", D + "/busy.json", D + "/agents.json"
 BATON = [" /", " \\", "♪＼"]
 FPS = 8

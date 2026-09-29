@@ -5,7 +5,7 @@ import curses, os, subprocess, sys
 
 PANE = sys.argv[1] if len(sys.argv) > 1 else ""
 ROOT = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else ".")
-HELP = "↑↓ move  → ← open/close  Enter/右click insert  y copy  a-z jump  . hidden  q quit"
+HELP = "↑↓ move  → ← open/close  u/⌫ up  Enter/右click insert  y copy  a-z jump  . hidden  q quit"
 
 def children(path, hidden):
     try:
@@ -35,9 +35,9 @@ def main(scr):
     curses.init_pair(2, 240, -1)
     curses.init_pair(3, 220, -1)
     DIR, DIM, NOTE = curses.color_pair(1), curses.color_pair(2), curses.color_pair(3)
-    opened, hidden, cur, top, msg = {ROOT}, False, 0, 0, ""
+    root, opened, hidden, cur, top, msg = ROOT, {ROOT}, False, 0, 0, ""
     while True:
-        rows = flatten(ROOT, 0, opened, hidden, [])
+        rows = flatten(root, 0, opened, hidden, [])
         h, w = scr.getmaxyx()
         body = max(1, h - 2)
         cur = max(0, min(cur, len(rows) - 1))
@@ -45,7 +45,7 @@ def main(scr):
         if cur >= top + body:
             top = cur - body + 1
         scr.erase()
-        scr.addnstr(0, 0, ROOT, w - 1, DIR | curses.A_BOLD)
+        scr.addnstr(0, 0, root, w - 1, DIR | curses.A_BOLD)
         for i, (p, depth, d) in enumerate(rows[top:top + body]):
             mark = ("▾ " if p in opened else "▸ ") if d else "  "
             line = "  " * depth + mark + os.path.basename(p) + ("/" if d else "")
@@ -60,7 +60,7 @@ def main(scr):
             pass
         msg = ""
         ch = scr.getch()
-        p, _, d = rows[cur] if rows else (ROOT, 0, True)
+        p, _, d = rows[cur] if rows else (root, 0, True)
         if ch == ord("q"):
             break
         elif ch in (curses.KEY_UP, ord("k")):
@@ -75,6 +75,10 @@ def main(scr):
             else:
                 parent = os.path.dirname(p)
                 cur = next((i for i, r in enumerate(rows) if r[0] == parent), cur)
+        elif ch in (ord("u"), curses.KEY_BACKSPACE, 127, 8) and os.path.dirname(root) != root:
+            prev, root = root, os.path.dirname(root)
+            opened.add(root)
+            cur = next((i for i, r in enumerate(flatten(root, 0, opened, hidden, [])) if r[0] == prev), 0)
         elif ch == ord("."):
             hidden = not hidden
         elif ch in (curses.KEY_ENTER, 10, 13):

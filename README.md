@@ -3,7 +3,7 @@
 Claude Code を tmux で飼うための 2 つのプラグイン。
 
 - **neko** — コンテキスト残量で表情が変わる猫。`claude` を起動すると下ペインに自動で現れ、作業中は動き、サブエージェントが走ると子猫が並ぶ
-- **tree** — 左ペインのディレクトリツリー。`Enter` / 右クリックで選んだパスを Claude のプロンプトへ挿入、`y` で tmux バッファへコピー
+- **tree** — 左ペインのディレクトリツリー。`u` / Backspace で親ディレクトリへ登り、`Enter` / 右クリックで選んだパスを Claude のプロンプトへ挿入、`y` で tmux バッファへコピー
 
 依存は tmux と python3（標準ライブラリのみ）。Linux / macOS / WSL で動く。tmux の中で `claude` を起動することが前提で、tmux が無い環境ではペインは開かない。
 
@@ -64,7 +64,7 @@ claude-neko --resume
 
 ## 状態ファイル
 
-`~/.claude/statusline/` に `state.json` / `busy.json` / `agents.json` を書く。環境変数 `NEKO_DIR` で場所を変えられる。
+`~/.claude/statusline/<session_id>/` に `state.json` / `busy.json` / `agents.json` を書く。セッションごとに分かれているので、複数ウィンドウで複数の Claude を動かしても猫は混ざらない。セッション終了時に自分のディレクトリと 1 日以上更新のない取り残しを片付ける。環境変数 `NEKO_DIR` で親ディレクトリを変えられる。
 
 ## 開発
 
